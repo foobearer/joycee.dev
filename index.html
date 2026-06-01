@@ -137,6 +137,7 @@
   .project-tag.purple { color: var(--accent2); }
   .project-tag.amber { color: var(--accent3); }
   .project-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; }
+  a.project-title:hover { color: var(--accent3) !important; transition: color 0.2s; }
   .project-desc { color: var(--muted); font-size: 0.875rem; line-height: 1.7; margin-bottom: 1.25rem; font-family: var(--mono); }
   .project-stack { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
   .stack-pill { font-family: var(--mono); font-size: 0.65rem; padding: 0.25rem 0.5rem; background: var(--surface2); color: var(--muted); }
@@ -345,12 +346,13 @@
   <div class="projects-grid">
     <div class="project-card amber">
       <div class="project-tag amber">● AI · Azure / AWS</div>
-      <div class="project-title">AI-Powered Content Analysis Platform</div>
-      <p class="project-desc">Automated classification and indexing of video, image, and audio assets using Azure and AWS AI services. Removed manual transcription workflows and delivered search results 40% faster.</p>
+      <a href="./blog-ai-content-pipeline.html" class="project-title" style="display:block; text-decoration:none; color:inherit;" target="_blank" rel="noopener">ADAIS — AI Data Analysis &amp; Indexing System</a>
+      <p class="project-desc">A full-stack AI system that automatically analyses and indexes images, video, and documents. Switch between OpenAI, Google Cloud, and HuggingFace providers.</p>
       <div class="project-stack">
-        <span class="stack-pill">Azure AI</span><span class="stack-pill">AWS</span><span class="stack-pill">React</span><span class="stack-pill">TypeScript</span><span class="stack-pill">C#</span>
+        <span class="stack-pill">Python</span><span class="stack-pill">FastAPI</span><span class="stack-pill">React</span><span class="stack-pill">Vite</span><span class="stack-pill">Tailwind</span>
       </div>
       <div class="project-links">
+        <a href="./blog-ai-content-pipeline.html" class="project-link" target="_blank" rel="noopener">Read Blog →</a>
         <a href="https://github.com/foobearer/ai-content-pipeline" class="project-link" target="_blank" rel="noopener">GitHub →</a>
       </div>
     </div>
