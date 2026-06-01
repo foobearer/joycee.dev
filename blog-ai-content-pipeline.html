@@ -3,191 +3,210 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Building an AI Data Analysis &amp; Indexing System (ADAIS) | Joycee Paragas</title>
-<meta name="description" content="A step-by-step guide to building ADAIS (AI Data Analysis &amp; Indexing System) with FastAPI, React, Vite, Tailwind CSS, and three AI providers." />
+<title>Building ADAIS — AI Data Analysis & Indexing System | Joycee Paragas</title>
+<meta name="description" content="A step-by-step guide to building ADAIS — AI Data Analysis & Indexing System — with FastAPI, React, Vite, Tailwind CSS, and three AI providers." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,300&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #faf9f6;
-  --surface: #f3f1ec;
-  --border: #e2ddd6;
-  --text: #1a1a18;
-  --muted: #6b6860;
-  --accent: #1a6b4a;
-  --accent2: #c84b2f;
-  --code-bg: #1a1a18;
-  --code-text: #00ff9d;
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --border: #2a2a3a;
+  --accent: #00ff9d;
+  --accent2: #7c6af7;
+  --accent3: #ff9d00;
+  --text: #e8e8f0;
+  --muted: #7a7a9a;
   --mono: 'JetBrains Mono', monospace;
-  --display: 'Fraunces', serif;
-  --body: 'DM Sans', sans-serif;
+  --sans: 'Syne', sans-serif;
 }
 html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 17px; line-height: 1.75; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.75; overflow-x: hidden; }
+
+/* ── Nav — identical to portfolio ── */
+nav {
+  position: sticky; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 3rem;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { font-family: var(--mono); font-size: 1rem; color: var(--accent); letter-spacing: 0.05em; text-decoration: none; }
+.nav-logo span { color: var(--muted); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+.nav-links a:hover { color: var(--accent); }
 
 /* ── Layout ── */
-.page { max-width: 720px; margin: 0 auto; padding: 0 2rem 6rem; }
-.wide { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
-
-/* ── Nav ── */
-nav { border-bottom: 1px solid var(--border); padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; background: var(--bg); position: sticky; top: 0; z-index: 10; }
-.nav-brand { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); text-decoration: none; }
-.nav-links { display: flex; gap: 1.5rem; list-style: none; }
-.nav-links a { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.2s; }
-.nav-links a:hover { color: var(--text); }
+.page { max-width: 760px; margin: 0 auto; padding: 0 2rem 6rem; }
 
 /* ── Hero ── */
-.hero { padding: 5rem 2rem 4rem; max-width: 720px; margin: 0 auto; }
-.hero-tag { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
-.hero-tag::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--accent); }
-.hero h1 { font-family: var(--display); font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
-.hero h1 em { font-style: italic; color: var(--accent); }
+.hero { padding: 5rem 2rem 3rem; max-width: 760px; margin: 0 auto; }
+.hero-label { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+.hero-label::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--accent); }
+.hero h1 { font-family: var(--sans); font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+.hero h1 .accent { color: var(--accent); }
+.hero h1 .accent2 { color: var(--accent2); }
 .hero-meta { display: flex; gap: 2rem; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 2rem; flex-wrap: wrap; }
-.hero-meta span { display: flex; align-items: center; gap: 0.4rem; }
-.hero-intro { font-size: 1.1rem; color: var(--muted); line-height: 1.8; border-left: 3px solid var(--accent); padding-left: 1.25rem; }
+.hero-intro { font-family: var(--mono); font-size: 0.9rem; color: var(--muted); line-height: 1.8; border-left: 3px solid var(--accent); padding-left: 1.25rem; }
+
+/* ── Tags ── */
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
+.tag { font-family: var(--mono); font-size: 0.68rem; padding: 0.3rem 0.7rem; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.tag.a { border-color: var(--accent); color: var(--accent); }
+.tag.b { border-color: var(--accent2); color: var(--accent2); }
+.tag.c { border-color: var(--accent3); color: var(--accent3); }
 
 /* ── TOC ── */
 .toc { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem 2rem; margin: 3rem 0; }
-.toc-title { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; }
+.toc-title { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; }
 .toc ol { padding-left: 1.25rem; }
 .toc li { margin-bottom: 0.4rem; }
-.toc a { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); text-decoration: none; }
-.toc a:hover { text-decoration: underline; }
+.toc a { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.toc a:hover { color: var(--accent); }
 
-/* ── Article body ── */
+/* ── Article typography ── */
 article { padding-top: 1rem; }
-h2 { font-family: var(--display); font-size: 1.8rem; font-weight: 700; margin: 3.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); line-height: 1.2; }
-h3 { font-family: var(--display); font-size: 1.25rem; font-weight: 700; margin: 2.5rem 0 0.75rem; color: var(--text); }
-p { margin-bottom: 1.25rem; }
-strong { font-weight: 500; color: var(--text); }
-a { color: var(--accent); }
+h2 { font-family: var(--sans); font-size: 1.6rem; font-weight: 800; margin: 3.5rem 0 1rem; padding-top: 1rem; border-top: 1px solid var(--border); line-height: 1.2; letter-spacing: -0.02em; }
+h3 { font-family: var(--sans); font-size: 1.1rem; font-weight: 600; margin: 2.5rem 0 0.75rem; color: var(--text); }
+p { margin-bottom: 1.25rem; color: var(--muted); font-family: var(--mono); font-size: 0.875rem; line-height: 1.9; }
+p strong { color: var(--text); font-weight: 500; }
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
+p code { background: var(--surface2); border: 1px solid var(--border); padding: 0.15em 0.5em; font-size: 0.82em; color: var(--accent3); font-family: var(--mono); }
+li code { background: var(--surface2); border: 1px solid var(--border); padding: 0.15em 0.5em; font-size: 0.82em; color: var(--accent3); font-family: var(--mono); }
 
 /* ── Callout boxes ── */
-.callout { padding: 1.25rem 1.5rem; margin: 2rem 0; border-left: 3px solid; }
-.callout-tip { border-color: var(--accent); background: rgba(26,107,74,0.05); }
-.callout-note { border-color: #5b7fa6; background: rgba(91,127,166,0.05); }
-.callout-warn { border-color: var(--accent2); background: rgba(200,75,47,0.05); }
+.callout { padding: 1.25rem 1.5rem; margin: 2rem 0; border-left: 3px solid; background: var(--surface); }
+.callout-tip { border-color: var(--accent); }
+.callout-note { border-color: var(--accent2); }
+.callout-warn { border-color: var(--accent3); }
 .callout-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
 .callout-tip .callout-label { color: var(--accent); }
-.callout-note .callout-label { color: #5b7fa6; }
-.callout-warn .callout-label { color: var(--accent2); }
-.callout p { margin: 0; font-size: 0.95rem; color: var(--muted); }
+.callout-note .callout-label { color: var(--accent2); }
+.callout-warn .callout-label { color: var(--accent3); }
+.callout p { margin: 0; }
 
 /* ── Code blocks ── */
-.code-block { margin: 1.75rem 0; }
-.code-header { background: #2a2a26; padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; }
-.code-filename { font-family: var(--mono); font-size: 0.7rem; color: #7a7a6a; }
-.code-lang { font-family: var(--mono); font-size: 0.65rem; color: #00ff9d; text-transform: uppercase; letter-spacing: 0.1em; }
-pre { background: var(--code-bg); padding: 1.5rem; overflow-x: auto; margin: 0; }
-code { font-family: var(--mono); font-size: 0.8rem; line-height: 1.8; color: var(--code-text); }
-p code, li code { background: var(--surface); border: 1px solid var(--border); padding: 0.15em 0.4em; font-size: 0.82em; color: var(--accent2); border-radius: 3px; }
+.code-block { margin: 1.75rem 0; border: 1px solid var(--border); }
+.code-header { background: var(--surface2); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.code-filename { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+.code-lang { font-family: var(--mono); font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; }
+pre { background: var(--surface); padding: 1.5rem; overflow-x: auto; margin: 0; }
+code { font-family: var(--mono); font-size: 0.78rem; line-height: 1.9; color: var(--text); }
 
 /* ── Syntax colours ── */
-.kw { color: #7c6af7; }
-.str { color: #f9a02e; }
-.cm { color: #5a5a4a; font-style: italic; }
+.kw { color: var(--accent2); }
+.str { color: var(--accent3); }
+.cm { color: var(--muted); font-style: italic; }
 .fn { color: #00c8ff; }
-.cl { color: #ffcc00; }
-.num { color: #ff9d00; }
+.cl { color: var(--accent); }
+.num { color: var(--accent3); }
 .dec { color: #ff6b9d; }
 
 /* ── Architecture diagram ── */
-.arch { background: var(--code-bg); padding: 2rem; margin: 2rem 0; overflow-x: auto; }
-.arch pre { background: none; padding: 0; }
-.arch code { color: #7a7a6a; font-size: 0.78rem; }
-.arch code .hl { color: #00ff9d; }
-.arch code .hl2 { color: #7c6af7; }
-.arch code .hl3 { color: #ff9d00; }
+.arch { border: 1px solid var(--border); margin: 2rem 0; }
+.arch pre { background: var(--surface); padding: 1.5rem; overflow-x: auto; }
+.arch code { color: var(--muted); font-size: 0.78rem; }
+.arch code .hl  { color: var(--accent); }
+.arch code .hl2 { color: var(--accent2); }
+.arch code .hl3 { color: var(--accent3); }
 
-/* ── Provider comparison table ── */
-.table-wrap { overflow-x: auto; margin: 2rem 0; }
-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-th { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; background: var(--surface); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--muted); }
-td { padding: 0.75rem 1rem; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+/* ── Table ── */
+.table-wrap { overflow-x: auto; margin: 2rem 0; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); color: var(--accent); }
+td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: var(--muted); font-family: var(--mono); font-size: 0.78rem; }
+tr:last-child td { border-bottom: none; }
 tr:nth-child(even) td { background: var(--surface); }
-.yes { color: var(--accent); font-weight: 500; }
-.no { color: var(--muted); }
-.warn-cell { color: var(--accent2); }
+.yes  { color: var(--accent) !important; }
+.no   { color: var(--muted) !important; }
+.warn-cell { color: var(--accent3) !important; }
 
-/* ── Step pills ── */
-.steps { counter-reset: step; margin: 2rem 0; }
-.step { counter-increment: step; display: flex; gap: 1.25rem; margin-bottom: 2rem; align-items: flex-start; }
-.step-num { background: var(--accent); color: white; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; }
-.step-body h4 { font-family: var(--body); font-size: 1rem; font-weight: 500; margin-bottom: 0.4rem; }
-.step-body p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+/* ── Steps ── */
+.steps { margin: 2rem 0; }
+.step { display: flex; gap: 1.25rem; margin-bottom: 2rem; align-items: flex-start; }
+.step-num { background: var(--accent); color: var(--bg); font-family: var(--mono); font-size: 0.75rem; font-weight: 700; min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; }
+.step-body h4 { font-family: var(--sans); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--text); }
+.step-body p { margin: 0; font-size: 0.82rem; }
 
-/* ── Tag pills ── */
-.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; }
-.tag { font-family: var(--mono); font-size: 0.68rem; padding: 0.3rem 0.7rem; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
-.tag.accent { border-color: var(--accent); color: var(--accent); }
-.tag.accent2 { border-color: var(--accent2); color: var(--accent2); }
-
-/* ── Section divider ── */
-.divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+/* ── Section label — identical to portfolio ── */
+.section-label { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 200px; }
 
 /* ── Author card ── */
 .author-card { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem 2rem; margin: 4rem 0 2rem; display: flex; gap: 1.5rem; align-items: flex-start; }
-.author-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1rem; color: white; font-weight: 700; flex-shrink: 0; }
-.author-name { font-weight: 500; font-size: 1rem; margin-bottom: 0.25rem; }
-.author-bio { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
-.author-links { display: flex; gap: 1rem; margin-top: 0.75rem; }
-.author-links a { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-decoration: none; }
+.author-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1rem; color: var(--bg); font-weight: 700; flex-shrink: 0; }
+.author-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; color: var(--text); font-family: var(--sans); }
+.author-bio { font-size: 0.8rem; color: var(--muted); line-height: 1.7; font-family: var(--mono); }
+.author-links { display: flex; gap: 1rem; margin-top: 0.75rem; flex-wrap: wrap; }
+.author-links a { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); text-decoration: none; border: 1px solid var(--border); padding: 0.25rem 0.75rem; transition: border-color 0.2s; }
+.author-links a:hover { border-color: var(--accent); }
 
-/* ── Footer ── */
-footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+/* ── Divider ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
 
-@media(max-width: 600px) {
-  .hero { padding: 3rem 1.5rem 2rem; }
-  .page { padding: 0 1.25rem 4rem; }
-  nav { padding: 1rem 1.25rem; }
+/* ── Footer — identical to portfolio ── */
+footer { border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+.footer-back { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-back:hover { color: var(--accent); }
+
+@media(max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
   .nav-links { display: none; }
+  .hero { padding: 3rem 1.5rem 2rem; }
+  .page { padding: 0 1.5rem 4rem; }
   .author-card { flex-direction: column; }
+  footer { padding: 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="https://joycee.dev" class="nav-brand">joycee.dev</a>
+  <a href="./index.html" class="nav-logo"><span>~/</span>joycee.dev</a>
   <ul class="nav-links">
-    <li><a href="https://joycee.dev#projects">Projects</a></li>
-    <li><a href="https://medium.com/@ilovejoyceep" target="_blank" rel="noopener">Medium</a></li>
+    <li><a href="./index.html#projects">Projects</a></li>
+    <li><a href="./index.html#blog">Blog</a></li>
     <li><a href="https://github.com/foobearer/ai-content-pipeline" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a href="./index.html#contact">Contact</a></li>
   </ul>
 </nav>
 
 <div class="hero">
-  <div class="hero-tag">Technical deep-dive</div>
-  <h1>Building an <em>AI Data Analysis</em> &amp; Indexing System from Scratch</h1>
+  <div class="hero-label">Technical deep-dive · ADAIS</div>
+  <h1>Building <span class="accent">AI Data Analysis</span><br>&amp; <span class="accent2">Indexing System</span><br>from Scratch</h1>
   <div class="hero-meta">
     <span>Joycee Catamora Paragas</span>
     <span>May 2026</span>
     <span>15 min read</span>
   </div>
   <p class="hero-intro">
-    A step-by-step guide to building ADAIS (AI Data Analysis &amp; Indexing System) — analyses images, video, and documents with a provider switcher for OpenAI, Google Cloud, and HuggingFace. FastAPI backend, React + Vite + Tailwind frontend, fully typed with TypeScript.
+    A step-by-step guide to building ADAIS — a full-stack AI system that analyses images, video, and documents using a provider switcher for OpenAI, Google Cloud, and HuggingFace. FastAPI backend · React + Vite + Tailwind frontend · fully typed with TypeScript.
   </p>
 </div>
 
 <div class="page">
   <div class="tags">
-    <span class="tag accent">Python</span>
-    <span class="tag accent">FastAPI</span>
-    <span class="tag accent">React</span>
-    <span class="tag accent">Vite</span>
-    <span class="tag accent">Tailwind CSS</span>
-    <span class="tag accent2">OpenAI</span>
-    <span class="tag accent2">HuggingFace</span>
-    <span class="tag accent2">Google Cloud</span>
+    <span class="tag a">Python</span>
+    <span class="tag a">FastAPI</span>
+    <span class="tag a">React</span>
+    <span class="tag a">Vite</span>
+    <span class="tag a">Tailwind CSS</span>
+    <span class="tag b">OpenAI</span>
+    <span class="tag b">HuggingFace</span>
+    <span class="tag b">Google Cloud</span>
     <span class="tag">TypeScript</span>
     <span class="tag">Docker</span>
   </div>
 
   <div class="toc">
-    <div class="toc-title">Table of contents</div>
+    <div class="toc-title">// table of contents</div>
     <ol>
       <li><a href="#why">Why I built this</a></li>
       <li><a href="#architecture">Architecture overview</a></li>
@@ -203,18 +222,20 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
   <article>
 
     <!-- WHY -->
-    <h2 id="why">1. Why I built this</h2>
-    <p>Content libraries grow fast. Manually tagging thousands of video, image, and audio assets is slow, error-prone, and doesn't scale — every asset needs a human to describe it before it becomes searchable. I built ADAIS — the AI Data Analysis &amp; Indexing System — to automate that entirely.</p>
-    <p>ADAIS is a full-stack system that accepts any file, detects its type automatically, routes it through an AI provider of your choice, and returns structured, searchable metadata — labels, transcripts, entities, sentiment, dominant colours, and more. No manual tagging required.</p>
+    <div class="section-label">01 // why I built this</div>
+    <h2 id="why">Why I Built This</h2>
+    <p>Content libraries grow fast. Manually tagging thousands of video, image, and audio files is slow, error-prone, and doesn't scale — every file needs a human to describe it before it becomes searchable. I built ADAIS to automate that entirely.</p>
+    <p>ADAIS is a full-stack system that accepts any file, detects its type automatically, routes it through an AI provider of your choice, and returns <strong>structured, searchable metadata</strong> — labels, transcripts, entities, sentiment, dominant colours, and more. No manual tagging required.</p>
 
     <div class="callout callout-note">
-      <div class="callout-label">Note</div>
-      <p>All source code is available at <a href="https://github.com/foobearer/ai-content-pipeline" target="_blank" rel="noopener">github.com/foobearer/ai-content-pipeline</a>. You can follow along by cloning the repo or building from scratch with this guide.</p>
+      <div class="callout-label">// source code</div>
+      <p>All code is available at <a href="https://github.com/foobearer/ai-content-pipeline" target="_blank" rel="noopener">github.com/foobearer/ai-content-pipeline</a>. Clone it and follow along or build from scratch with this guide.</p>
     </div>
 
     <!-- ARCHITECTURE -->
-    <h2 id="architecture">2. Architecture overview</h2>
-    <p>ADAIS has two parts: a <strong>FastAPI backend</strong> that handles file ingestion, provider routing, and analysis, and a <strong>React + Vite frontend</strong> that provides the upload UI and renders structured results. The key architectural decision was the <strong>Provider Pattern</strong> — an abstract interface that all three AI providers implement, so the rest of the code never needs to know which one is being used.</p>
+    <div class="section-label">02 // architecture</div>
+    <h2 id="architecture">Architecture Overview</h2>
+    <p>ADAIS has two parts: a <strong>FastAPI backend</strong> that handles file ingestion, provider routing, and analysis, and a <strong>React + Vite frontend</strong> that provides the upload UI and renders results. The key architectural decision was the <strong>Provider Pattern</strong> — an abstract interface that all three AI providers implement.</p>
 
     <div class="arch">
       <pre><code><span class="hl">React + Vite + Tailwind (port 5173)</span>
@@ -235,14 +256,12 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
      Whisper  Speech   Whisper-base</code></pre>
     </div>
 
-    <p>The project is split cleanly into <code>backend/</code> and <code>frontend/</code> directories. Here's the full structure:</p>
-
     <div class="code-block">
       <div class="code-header">
         <span class="code-filename">Project structure</span>
         <span class="code-lang">shell</span>
       </div>
-      <pre><code>ai-content-pipeline/
+      <pre><code>adais/
 ├── backend/
 │   └── src/
 │       ├── main.py              <span class="cm"># FastAPI app + all routes</span>
@@ -261,17 +280,18 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     └── src/
         ├── App.tsx
         ├── components/          <span class="cm"># One file per component</span>
-        ├── hooks/useAnalysis.ts <span class="cm"># All state logic here</span>
+        ├── hooks/useAnalysis.ts <span class="cm"># All state logic</span>
         ├── types/api.ts         <span class="cm"># TypeScript types</span>
         └── utils/api.ts         <span class="cm"># fetch wrapper</span></code></pre>
     </div>
 
     <!-- BACKEND -->
-    <h2 id="backend">3. Backend: FastAPI + the provider pattern</h2>
-    <p>FastAPI is an excellent choice for AI pipelines — it's async by default, auto-generates Swagger docs from your type hints, and Pydantic handles all validation. Let's start with the data models, since everything else is built around them.</p>
+    <div class="section-label">03 // backend</div>
+    <h2 id="backend">Backend: FastAPI + the Provider Pattern</h2>
+    <p>FastAPI is an excellent choice for AI pipelines — it's async by default, auto-generates Swagger docs from type hints, and Pydantic handles all validation. Start with the data models — everything else is built around them.</p>
 
-    <h3>Defining your schemas first</h3>
-    <p>I define all request and response shapes in <code>schemas.py</code> before writing a single route. This is the <em>single source of truth</em> — the frontend TypeScript types mirror these exactly.</p>
+    <h3>Define your schemas first</h3>
+    <p>All request and response shapes live in <code>schemas.py</code> — the single source of truth. The frontend TypeScript types mirror these exactly.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -291,11 +311,11 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     confidence: float = Field(..., ge=<span class="num">0.0</span>, le=<span class="num">1.0</span>)
 
 <span class="kw">class</span> <span class="cl">ImageAnalysis</span>(BaseModel):
-    labels:          list[<span class="cl">Label</span>] = []
-    extracted_text:  str | <span class="kw">None</span> = <span class="kw">None</span>
+    labels:           list[<span class="cl">Label</span>] = []
+    extracted_text:   str | <span class="kw">None</span> = <span class="kw">None</span>
     dominant_colours: list[str] = []
-    description:     str | <span class="kw">None</span> = <span class="kw">None</span>
-    tags:            list[str] = []
+    description:      str | <span class="kw">None</span> = <span class="kw">None</span>
+    tags:             list[str] = []
 
 <span class="kw">class</span> <span class="cl">AnalysisResult</span>(BaseModel):
     job_id:         str
@@ -307,12 +327,12 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <div class="callout callout-tip">
-      <div class="callout-label">Tip</div>
-      <p>Using <code>str | None</code> (Python 3.10+ union syntax) instead of <code>Optional[str]</code> is cleaner and now the standard. Pydantic v2 supports both.</p>
+      <div class="callout-label">// tip</div>
+      <p>Using <code>str | None</code> (Python 3.10+ union syntax) instead of <code>Optional[str]</code> is cleaner and now standard. Pydantic v2 supports both.</p>
     </div>
 
     <h3>The abstract base class</h3>
-    <p>This is the heart of the architecture. By defining an abstract interface, the rest of the app treats all three providers identically — the routes don't care if they're calling GPT-4o or a local HuggingFace model.</p>
+    <p>This is the heart of the architecture. All three providers implement the same interface — routes never need to know which provider they're calling.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -339,7 +359,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <h3>The provider factory</h3>
-    <p>The factory is the only place that knows which class maps to which provider name. Lazy imports mean missing optional dependencies don't crash the app on startup.</p>
+    <p>The factory is the only place that knows which class maps to which provider. Lazy imports mean missing optional dependencies don't crash the app on startup.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -360,8 +380,8 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
         <span class="kw">return</span> <span class="cl">HuggingFaceProvider</span>()</code></pre>
     </div>
 
-    <h3>The main routes</h3>
-    <p>With the provider pattern in place, each route is just a thin wrapper — validate the upload, get a provider, call the right method, return the result.</p>
+    <h3>The main route</h3>
+    <p>With the provider pattern in place, each route is a thin wrapper — validate, get provider, call method, return result.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -389,8 +409,9 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <!-- PROVIDERS -->
-    <h2 id="providers">4. Implementing the three AI providers</h2>
-    <p>Each provider implements the same three methods. Here's how each one works internally.</p>
+    <div class="section-label">04 // providers</div>
+    <h2 id="providers">Implementing the Three AI Providers</h2>
+    <p>Each provider implements the same three methods. Here's how each works internally.</p>
 
     <div class="table-wrap">
       <table>
@@ -444,7 +465,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <h3>OpenAI — structured JSON from GPT-4o</h3>
-    <p>The key technique here is using <code>response_format: {"type": "json_object"}</code> which forces GPT-4o to always return valid parseable JSON. Combined with a well-structured system prompt, you get reliable structured output every time.</p>
+    <p>The key technique is <code>response_format: {"type": "json_object"}</code> which forces GPT-4o to always return valid parseable JSON. Combined with a structured system prompt, you get reliable output every time.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -471,7 +492,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <h3>HuggingFace — lazy-loading local models</h3>
-    <p>Loading a transformer model takes 5–10 seconds. The trick is to cache pipelines after first load so subsequent calls are instant. We use <code>run_in_executor</code> to run the blocking model load in a thread pool without blocking FastAPI's async event loop.</p>
+    <p>Loading a transformer model takes 5–10 seconds. Cache pipelines after first load so subsequent calls are instant. Use <code>run_in_executor</code> to avoid blocking FastAPI's async event loop.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -486,7 +507,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     <span class="kw">async def</span> <span class="fn">_load_pipeline</span>(self, task: str, model: str):
         <span class="kw">if</span> task <span class="kw">not in</span> self._pipelines:
             <span class="kw">from</span> transformers <span class="kw">import</span> pipeline
-            <span class="cm"># run_in_executor: blocking load runs in thread,</span>
+            <span class="cm"># run_in_executor: blocking load in thread,</span>
             <span class="cm"># doesn't block the async event loop</span>
             self._pipelines[task] = <span class="kw">await</span> asyncio.get_event_loop().<span class="fn">run_in_executor</span>(
                 <span class="kw">None</span>, <span class="kw">lambda</span>: <span class="fn">pipeline</span>(task, model=model)
@@ -495,13 +516,14 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <div class="callout callout-tip">
-      <div class="callout-label">Key insight</div>
-      <p>Never call blocking code (model loading, file I/O) directly in an <code>async</code> function. Always wrap it with <code>run_in_executor</code> so FastAPI can continue serving other requests while the model loads.</p>
+      <div class="callout-label">// key insight</div>
+      <p>Never call blocking code directly in an <code>async</code> function. Always wrap with <code>run_in_executor</code> so FastAPI can continue serving other requests while a model loads.</p>
     </div>
 
     <!-- FRONTEND -->
-    <h2 id="frontend">5. Frontend: React + Vite + Tailwind</h2>
-    <p>The frontend follows a clear separation: one custom hook owns all state and API logic, components are pure presentational, and TypeScript types mirror the backend schemas exactly. Here's the component tree:</p>
+    <div class="section-label">05 // frontend</div>
+    <h2 id="frontend">Frontend: React + Vite + Tailwind</h2>
+    <p>The frontend follows a clear separation: one custom hook owns all state and API logic, components are purely presentational. Here's the component tree:</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -520,7 +542,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <h3>The useAnalysis hook — all state in one place</h3>
-    <p>Every piece of state for the workflow lives in a single custom hook. <code>App.tsx</code> just calls <code>useAnalysis()</code> and passes values to components — zero business logic in the component tree.</p>
+    <p>Every piece of state lives in a single custom hook. <code>App.tsx</code> just calls <code>useAnalysis()</code> and passes values to components — zero business logic in the component tree.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -530,18 +552,17 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
       <pre><code><span class="kw">type</span> <span class="cl">Status</span> = <span class="str">'idle'</span> | <span class="str">'analysing'</span> | <span class="str">'done'</span> | <span class="str">'error'</span>
 
 <span class="kw">export function</span> <span class="fn">useAnalysis</span>() {
-  <span class="kw">const</span> [status, setStatus]   = <span class="fn">useState</span>&lt;<span class="cl">Status</span>&gt;(<span class="str">'idle'</span>)
-  <span class="kw">const</span> [result, setResult]   = <span class="fn">useState</span>&lt;<span class="cl">AnalysisResult</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
-  <span class="kw">const</span> [file, setFile]       = <span class="fn">useState</span>&lt;<span class="cl">File</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
-  <span class="kw">const</span> [error, setError]     = <span class="fn">useState</span>&lt;string | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
+  <span class="kw">const</span> [status, setStatus] = <span class="fn">useState</span>&lt;<span class="cl">Status</span>&gt;(<span class="str">'idle'</span>)
+  <span class="kw">const</span> [result, setResult] = <span class="fn">useState</span>&lt;<span class="cl">AnalysisResult</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
+  <span class="kw">const</span> [file, setFile]     = <span class="fn">useState</span>&lt;<span class="cl">File</span> | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
+  <span class="kw">const</span> [error, setError]   = <span class="fn">useState</span>&lt;string | <span class="kw">null</span>&gt;(<span class="kw">null</span>)
 
   <span class="kw">const</span> analyse = <span class="fn">useCallback</span>(<span class="kw">async</span> (provider: <span class="cl">Provider</span>) => {
     <span class="kw">if</span> (!file) <span class="kw">return</span>
     <span class="fn">setStatus</span>(<span class="str">'analysing'</span>)
     <span class="kw">try</span> {
       <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">analyseFile</span>(file, provider)
-      <span class="fn">setResult</span>(data)
-      <span class="fn">setStatus</span>(<span class="str">'done'</span>)
+      <span class="fn">setResult</span>(data); <span class="fn">setStatus</span>(<span class="str">'done'</span>)
     } <span class="kw">catch</span> (e) {
       <span class="fn">setError</span>(e <span class="kw">instanceof</span> <span class="cl">Error</span> ? e.message : <span class="str">'Failed'</span>)
       <span class="fn">setStatus</span>(<span class="str">'error'</span>)
@@ -553,7 +574,7 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <h3>Vite proxy — no CORS headaches in development</h3>
-    <p>Instead of dealing with CORS during development, configure Vite to proxy API calls to the FastAPI backend. This means your frontend calls <code>/analyse/auto</code> and Vite silently forwards it to <code>localhost:8000</code>.</p>
+    <p>Configure Vite to proxy API calls to FastAPI. Your frontend calls <code>/analyse/auto</code> and Vite silently forwards it to <code>localhost:8000</code>.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -564,8 +585,8 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
   plugins: [<span class="fn">react</span>()],
   server: {
     proxy: {
-      <span class="str">'/analyse'</span>:  <span class="str">'http://localhost:8000'</span>,
-      <span class="str">'/health'</span>:   <span class="str">'http://localhost:8000'</span>,
+      <span class="str">'/analyse'</span>:   <span class="str">'http://localhost:8000'</span>,
+      <span class="str">'/health'</span>:    <span class="str">'http://localhost:8000'</span>,
       <span class="str">'/providers'</span>: <span class="str">'http://localhost:8000'</span>,
     }
   }
@@ -573,8 +594,9 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <!-- TYPESCRIPT -->
-    <h2 id="typescript">6. TypeScript types that mirror your Pydantic schemas</h2>
-    <p>The single biggest DX win is keeping your backend Pydantic schemas and frontend TypeScript types in sync. When the API response shape changes, you update both files and TypeScript immediately tells you every component that needs fixing.</p>
+    <div class="section-label">06 // typescript</div>
+    <h2 id="typescript">TypeScript Types from Pydantic Schemas</h2>
+    <p>Keep your backend Pydantic schemas and frontend TypeScript types in sync. When the API shape changes, TypeScript immediately tells you every component that needs fixing.</p>
 
     <div class="code-block">
       <div class="code-header">
@@ -590,14 +612,6 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
   confidence: number  <span class="cm">// 0.0 – 1.0</span>
 }
 
-<span class="kw">export interface</span> <span class="cl">ImageAnalysis</span> {
-  labels:           <span class="cl">Label</span>[]
-  extracted_text:   string | <span class="kw">null</span>
-  dominant_colours: string[]
-  description:      string | <span class="kw">null</span>
-  tags:             string[]
-}
-
 <span class="kw">export interface</span> <span class="cl">AnalysisResult</span> {
   job_id:         string
   content_type:   <span class="cl">ContentType</span>
@@ -609,48 +623,49 @@ footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center;
     </div>
 
     <div class="callout callout-note">
-      <div class="callout-label">Scaling tip</div>
-      <p>For larger projects, consider <a href="https://github.com/drwpow/openapi-typescript" target="_blank" rel="noopener">openapi-typescript</a> to auto-generate these types from your FastAPI's OpenAPI spec. FastAPI generates the spec automatically at <code>/openapi.json</code>.</p>
+      <div class="callout-label">// scaling tip</div>
+      <p>For larger projects, use <a href="https://github.com/drwpow/openapi-typescript" target="_blank" rel="noopener">openapi-typescript</a> to auto-generate types from FastAPI's OpenAPI spec at <code>/openapi.json</code>.</p>
     </div>
 
     <!-- RUNNING -->
-    <h2 id="running">7. Running it locally</h2>
-    <p>You only need Python 3.10+ and Node 18+ installed. Follow these steps:</p>
+    <div class="section-label">07 // running locally</div>
+    <h2 id="running">Running It Locally</h2>
+    <p>You only need Python 3.10+ and Node 18+. Open two terminal windows and follow these steps.</p>
 
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
           <h4>Clone the repo</h4>
-          <p>Get the code and navigate into the project directory.</p>
+          <p>Get the code from GitHub and navigate into the project.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
           <h4>Start the backend</h4>
-          <p>Create a virtual environment, install dependencies, and start FastAPI.</p>
+          <p>Create a virtual environment, install dependencies, copy .env.example to .env, start FastAPI.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
           <h4>Start the frontend</h4>
-          <p>Install Node dependencies and start the Vite dev server.</p>
+          <p>Install Node dependencies and start the Vite dev server in a second terminal.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-body">
           <h4>Open the app</h4>
-          <p>Visit localhost:5173 for the UI, or localhost:8000/docs for the auto-generated Swagger API docs.</p>
+          <p>UI at localhost:5173 · Auto-generated API docs at localhost:8000/docs</p>
         </div>
       </div>
     </div>
 
     <div class="code-block">
       <div class="code-header">
-        <span class="code-filename">Terminal — Backend</span>
+        <span class="code-filename">Terminal 1 — Backend</span>
         <span class="code-lang">shell</span>
       </div>
       <pre><code>git clone https://github.com/foobearer/ai-content-pipeline.git
@@ -663,7 +678,7 @@ uvicorn src.main:app --reload</code></pre>
 
     <div class="code-block">
       <div class="code-header">
-        <span class="code-filename">Terminal — Frontend</span>
+        <span class="code-filename">Terminal 2 — Frontend</span>
         <span class="code-lang">shell</span>
       </div>
       <pre><code>cd ../frontend
@@ -672,28 +687,29 @@ npm run dev</code></pre>
     </div>
 
     <div class="callout callout-warn">
-      <div class="callout-label">First run warning</div>
-      <p>Using the HuggingFace provider for the first time will download approximately 2GB of model weights. This is a one-time download — models are cached locally after that. Subsequent runs start instantly.</p>
+      <div class="callout-label">// first run warning</div>
+      <p>Using the HuggingFace provider for the first time downloads approximately 2GB of model weights. This is a one-time download — models are cached locally and subsequent runs start instantly.</p>
     </div>
 
     <!-- LESSONS -->
-    <h2 id="lessons">8. Lessons learned</h2>
+    <div class="section-label">08 // lessons learned</div>
+    <h2 id="lessons">Lessons Learned</h2>
 
     <h3>Use the provider pattern from day one</h3>
-    <p>A common mistake is coupling your code directly to one AI provider from the start. The AI landscape moves fast — a model that is best today may not be in six months, and you might need to swap for cost, performance, or compliance reasons. The abstract base class pattern solves this from day one: add a new provider by implementing four methods, and nothing else in the codebase needs to change. This was the single most valuable architectural decision in this project.</p>
+    <p>A common mistake is coupling your code directly to one AI provider. The AI landscape moves fast — a model that is best today may not be in six months, and you might need to swap for cost, performance, or compliance reasons. The abstract base class pattern solves this from day one: add a new provider by implementing four methods, and nothing else in the codebase changes. This was the single most valuable architectural decision in this project.</p>
 
     <h3>Validate file types by content, not extension</h3>
-    <p>A user can rename <code>virus.exe</code> to <code>photo.jpg</code>. Always read the file's magic bytes — the first few bytes that identify the format — rather than trusting the extension. The <code>file_handler.py</code> utility in this project does this before any file touches an AI model.</p>
+    <p>A user can rename <code>virus.exe</code> to <code>photo.jpg</code>. Always read the file's <strong>magic bytes</strong> — the first few bytes that identify the format — rather than trusting the extension. The <code>file_handler.py</code> utility does this before any file touches an AI model.</p>
 
     <h3>run_in_executor is non-negotiable for blocking calls</h3>
-    <p>FastAPI is async — if you call a blocking function directly (model loading, synchronous SDK calls, file reading), you block the entire server. Every blocking operation in this project runs in a thread pool via <code>asyncio.get_event_loop().run_in_executor(None, ...)</code>.</p>
+    <p>FastAPI is async — calling a blocking function directly (model loading, synchronous SDK calls) blocks the entire server. Every blocking operation in ADAIS runs in a thread pool via <code>asyncio.get_event_loop().run_in_executor(None, ...)</code>.</p>
 
-    <h3>Keep TypeScript types manually in sync with Pydantic</h3>
-    <p>For a project this size, manually mirroring the types is fast and readable. The discipline of updating both files when changing a schema is worth it — TypeScript's compiler immediately surfaces every broken component when a field changes.</p>
+    <h3>Keep TypeScript types in sync with Pydantic</h3>
+    <p>For a project this size, manually mirroring the types is fast and readable. The discipline of updating both files when a schema changes is worth it — TypeScript's compiler immediately surfaces every broken component.</p>
 
-    <hr class="divider" />
+    <hr />
 
-    <p>The full project is on GitHub at <a href="https://github.com/foobearer/ai-content-pipeline" target="_blank" rel="noopener">github.com/foobearer/ai-content-pipeline</a> — clone it, run it, and use it as a starting point for your own data analysis and indexing projects. If you have questions or want to extend it with a new provider, open an issue or reach out directly.</p>
+    <p>The full project is on GitHub at <a href="https://github.com/foobearer/ai-content-pipeline" target="_blank" rel="noopener">github.com/foobearer/ai-content-pipeline</a> — clone it, run it, and use it as a starting point for your own data analysis and indexing projects. Questions or want to extend it with a new provider? Open an issue or reach out directly.</p>
 
   </article>
 
@@ -703,7 +719,7 @@ npm run dev</code></pre>
       <div class="author-name">Joycee Catamora Paragas</div>
       <div class="author-bio">Full Stack & AI Engineer with 11 years of experience across React, Angular, TypeScript, Python, and cloud platforms. Currently studying Applied AI & Data Science at MIT Professional Education.</div>
       <div class="author-links">
-        <a href="https://joycee.dev" target="_blank" rel="noopener">joycee.dev</a>
+        <a href="./index.html">joycee.dev</a>
         <a href="https://github.com/foobearer" target="_blank" rel="noopener">GitHub</a>
         <a href="https://medium.com/@ilovejoyceep" target="_blank" rel="noopener">Medium</a>
         <a href="https://www.linkedin.com/in/joyce-catamora/" target="_blank" rel="noopener">LinkedIn</a>
@@ -714,7 +730,8 @@ npm run dev</code></pre>
 </div>
 
 <footer>
-  © 2026 Joycee Catamora Paragas · <a href="https://joycee.dev" style="color:inherit">joycee.dev</a>
+  <span class="footer-copy">© 2026 Joycee Catamora Paragas · joycee.dev</span>
+  <a href="#" class="footer-back">↑ back to top</a>
 </footer>
 
 </body>
