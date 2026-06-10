@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Notes — 8 NumPy Concepts That Do the Heavy Lifting in Real Data Science</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --bg2: #13161b;
+    --bg3: #1a1e26;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8e6e0;
+    --text2: #9a9891;
+    --text3: #5c5a55;
+    --accent: #5b8ff9;
+    --accent2: #3d6fe8;
+    --green: #4caf7d;
+    --green-bg: rgba(76,175,125,0.1);
+    --amber: #e8a53a;
+    --amber-bg: rgba(232,165,58,0.1);
+    --coral: #e8765a;
+    --purple: #9b7de8;
+    --purple-bg: rgba(155,125,232,0.1);
+    --teal: #3ab8c8;
+    --teal-bg: rgba(58,184,200,0.1);
+    --font-sans: 'DM Sans', sans-serif;
+    --font-serif: 'Fraunces', serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,18,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    height: 56px;
+    gap: 0;
+  }
+
+  .nav-brand {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text);
+    text-decoration: none;
+    margin-right: 2.5rem;
+    letter-spacing: 0.01em;
+  }
+
+  .nav-tabs {
+    display: flex;
+    height: 100%;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-tabs li a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 1.1rem;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--text2);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .nav-tabs li a:hover { color: var(--text); }
+  .nav-tabs li a.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ── LAYOUT ── */
+  .page-wrap {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .sidebar-nav a:hover {
+    background: var(--bg3);
+    color: var(--text);
+  }
+
+  .sidebar-nav a.active {
+    background: var(--bg3);
+    color: var(--accent);
+  }
+
+  .sidebar-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { min-width: 0; }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 3.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .hero-eyebrow span {
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 540px;
+    line-height: 1.75;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    background: var(--bg2);
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 3.5rem;
+    scroll-margin-top: 80px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    padding-top: 5px;
+    width: 24px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .section-header h2 {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 0 1.5rem;
+  }
+
+  /* When box */
+  .when-box {
+    display: flex;
+    gap: 10px;
+    background: var(--green-bg);
+    border: 1px solid rgba(76,175,125,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 1.25rem;
+    font-size: 13px;
+    color: #7ecba0;
+    line-height: 1.6;
+  }
+
+  .when-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: #4caf7d;
+  }
+
+  .when-box strong { color: #4caf7d; font-weight: 500; }
+
+  .when-summary {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(76,175,125,0.2);
+    font-size: 13px;
+    color: #7ecba0;
+    line-height: 1.7;
+  }
+
+  .when-summary strong { color: #4caf7d; font-weight: 500; }
+
+  /* Prose */
+  .prose {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  /* Code block */
+  .code-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .code-lang {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  .copy-btn {
+    font-size: 11px;
+    color: var(--text3);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .copy-btn:hover { color: var(--text); border-color: var(--border2); }
+
+  pre {
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.75;
+    tab-size: 2;
+  }
+
+  .c { color: #4a5568; font-style: italic; }
+  .kw { color: #7cb8ff; }
+  .fn { color: #4caf7d; }
+  .str { color: #e8a53a; }
+  .num { color: #e87c5a; }
+  .op { color: var(--text2); }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: border-color 0.15s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .card-fn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  /* Tip */
+  .tip {
+    background: var(--amber-bg);
+    border: 1px solid rgba(232,165,58,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #d4a44a;
+    line-height: 1.7;
+  }
+
+  .tip-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tip-row + .tip-row {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(232,165,58,0.15);
+  }
+
+  .tip-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+  .tip strong { color: var(--amber); font-weight: 500; }
+
+  /* Memory trick */
+  .memory {
+    background: var(--purple-bg);
+    border: 1px solid rgba(155,125,232,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: #b8a2e8;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead { background: var(--bg2); }
+
+  th {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text3);
+    padding: 9px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  td:first-child { color: var(--text2); }
+
+  tr:last-child td { border-bottom: none; }
+
+  td code, .prose code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--bg3);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: var(--teal);
+  }
+
+  td.code-cell { font-family: var(--font-mono); font-size: 12px; color: var(--teal); }
+
+  /* Cheatsheet special */
+  .cheat-section {
+    border: 1px solid rgba(91,143,249,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 3.5rem;
+  }
+
+  .cheat-header {
+    background: rgba(91,143,249,0.08);
+    border-bottom: 1px solid rgba(91,143,249,0.2);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cheat-header h2 {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .star-badge {
+    width: 22px;
+    height: 22px;
+    background: rgba(91,143,249,0.15);
+    border: 1px solid rgba(91,143,249,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  .cheat-section table { border: none; }
+  .cheat-section .table-wrap { border: none; border-radius: 0; margin-bottom: 0; }
+  .cheat-section thead { background: rgba(255,255,255,0.03); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-wrap { grid-template-columns: 1fr; gap: 2rem; }
+    .sidebar { display: none; }
+    .hero h1 { font-size: 30px; }
+    nav { padding: 0 1rem; }
+    .page-wrap { padding: 2rem 1rem; }
+  }
+
+  /* Study guide */
+  .study-guide {
+    margin-top: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+
+  .study-guide-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--amber);
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+
+  .study-guide-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .study-guide-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .study-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .study-guide-list li strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a2e3a; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">Portfolio</a>
+  <ul class="nav-tabs">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Projects</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#" class="active">Python Notes</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE -->
+<div class="page-wrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">On this page</div>
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li><a href="#intro" class="active"><span class="sidebar-num">1.1</span>Introduction</a></li>
+      <li><a href="#functions"><span class="sidebar-num">1.2</span>NumPy Functions</a></li>
+      <li><a href="#trig"><span class="sidebar-num">1.3</span>Trig & Arithmetic</a></li>
+      <li><a href="#matrices"><span class="sidebar-num">1.4</span>Matrices</a></li>
+      <li><a href="#random"><span class="sidebar-num">1.5</span>Random Functions</a></li>
+      <li><a href="#access"><span class="sidebar-num">1.6</span>Accessing Arrays</a></li>
+      <li><a href="#modify"><span class="sidebar-num">1.7</span>Modifying Matrices</a></li>
+      <li><a href="#save"><span class="sidebar-num">1.8</span>Save & Load</a></li>
+      <div class="sidebar-divider"></div>
+      <li><a href="#cheatsheet"><span class="sidebar-num">★</span>Quick Reference</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow"><span></span>Python Notes — Module 1</div>
+      <h1>8 NumPy Concepts<br><em>That Do the Heavy Lifting</em><br>in Real Data Science</h1>
+      <p class="hero-desc">A structured walkthrough of all 8 NumPy lessons. Written to understand the <em>why</em> behind every function — not just the syntax.</p>
+      <div class="hero-meta">
+        <span class="badge">NumPy 1.1–1.8</span>
+        <span class="badge">8 lessons</span>
+        <span class="badge">~80 mins content</span>
+      </div>
+
+      <div class="study-guide">
+        <div class="study-guide-title">⚡ How to use this guide for studying</div>
+        <ul class="study-guide-list">
+          <li><span class="study-icon">🧠</span><div>Each section has a <strong>When to use</strong> green box — read that first. Knowing when to reach for a function is half the battle.</div></li>
+          <li><span class="study-icon">💡</span><div>The <strong>memory tricks</strong> are the mental shortcuts worth memorizing — they compress the concept into one sticky sentence.</div></li>
+          <li><span class="study-icon">⚡</span><div>The <strong>tip boxes</strong> are quick gotchas and pro-tips — things that trip beginners up. Pay extra attention to these.</div></li>
+          <li><span class="study-icon">🤓</span><div>The <strong>Quick-Recall Cheatsheet</strong> at the bottom is your final review — try covering the right column and testing yourself.</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── SECTION 1 ── -->
+    <div class="section" id="intro">
+      <div class="section-header">
+        <span class="section-num">1.1</span>
+        <h2>Introduction to NumPy</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Whenever you need to work with numbers in bulk — lists of values, tables of data, image pixels, math computations. It's far faster than plain Python lists.
+          <div class="when-summary">NumPy is the backbone of almost all Python data work. Its core object — the <strong>ndarray</strong> — is a fast, multi-dimensional container for numbers. Unlike a plain Python list, every element shares the same type, which makes operations dramatically faster. Think of it as the spreadsheet grid that lives under pandas, scikit-learn, and TensorFlow — you'll be using it every time you touch a dataset.</div>
+        </div>
+      </div>
+
+      <p class="prose">NumPy's core object is the <code>ndarray</code> (n-dimensional array). Think of it as a supercharged list that can hold numbers in any shape — 1D (a row), 2D (a table), or 3D (a cube).</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="c"># 1D array — a flat list of numbers</span>
+a = np.<span class="fn">array</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>])
+
+<span class="c"># 2D array — a matrix (rows × columns)</span>
+m = np.<span class="fn">array</span>([[<span class="num">1</span>, <span class="num">2</span>], [<span class="num">3</span>, <span class="num">4</span>]])
+
+<span class="c"># Useful info about your array</span>
+a.shape       <span class="c"># → (4,)    how many in each dimension</span>
+m.shape       <span class="c"># → (2, 2)  rows, columns</span>
+a.dtype       <span class="c"># → int64   what type of numbers</span>
+a.ndim        <span class="c"># → 1       how many dimensions</span></pre>
+      </div>
+
+      <div class="memory">💡 Memory trick: shape reads like coordinates — (rows, columns). A (3, 4) array has 3 rows and 4 columns.</div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Ready-made arrays</div>
+          <div class="card-fn">np.zeros((3,3))<br>np.ones((2,4))<br>np.eye(3)<br>np.full((2,2), 7)</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Range arrays</div>
+          <div class="card-fn">np.arange(0, 10, 2)<br>→ [0, 2, 4, 6, 8]<br>np.linspace(0, 1, 5)<br>→ [0, .25, .5, .75, 1]</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <div class="tip-row"><span class="tip-icon">⚡</span><div><strong>arange</strong> — like Python's range() but returns a NumPy array. Use when you need a range with a fixed step size.</div></div>
+        <div class="tip-row"><span class="tip-icon">⚡</span><div><strong>linspace</strong> — give me exactly N evenly spaced points between A and B. Use when you care about the number of points, not the step size.</div></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2 ── -->
+    <div class="section" id="functions">
+      <div class="section-header">
+        <span class="section-num">1.2</span>
+        <h2>NumPy Functions</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Any time you need to summarize, transform, or reshape your data — without writing loops.
+          <div class="when-summary">These are the everyday workhorses of NumPy. Instead of looping through thousands of rows to calculate an average, you just call <strong>np.mean()</strong> and it's done in one line. Reshaping lets you reorganize data into the shape a model or function expects — a critical skill when feeding data into machine learning pipelines.</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Goal</th><th>Function</th><th>Returns</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sum of all values</td><td class="code-cell">np.sum(a)</td><td>single number</td></tr>
+            <tr><td>Smallest value</td><td class="code-cell">np.min(a)</td><td>single number</td></tr>
+            <tr><td>Largest value</td><td class="code-cell">np.max(a)</td><td>single number</td></tr>
+            <tr><td>Average</td><td class="code-cell">np.mean(a)</td><td>single number</td></tr>
+            <tr><td>Middle value</td><td class="code-cell">np.median(a)</td><td>single number</td></tr>
+            <tr><td>Spread of values</td><td class="code-cell">np.std(a)</td><td>single number</td></tr>
+            <tr><td>Sort values</td><td class="code-cell">np.sort(a)</td><td>sorted array</td></tr>
+            <tr><td>Change shape</td><td class="code-cell">a.reshape(2, 3)</td><td>new-shape array</td></tr>
+            <tr><td>Flatten to 1D</td><td class="code-cell">a.flatten()</td><td>1D array</td></tr>
+            <tr><td>Transpose rows↔cols</td><td class="code-cell">a.T</td><td>flipped array</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>a = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>]])  <span class="c"># shape (2,3)</span>
+
+np.<span class="fn">sum</span>(a)               <span class="c"># → 21  (all elements)</span>
+np.<span class="fn">sum</span>(a, axis=<span class="num">0</span>)       <span class="c"># → [5,7,9]  column sums</span>
+np.<span class="fn">sum</span>(a, axis=<span class="num">1</span>)       <span class="c"># → [6,15]   row sums</span>
+
+a.<span class="fn">reshape</span>(<span class="num">3</span>, <span class="num">2</span>)         <span class="c"># 3 rows, 2 cols (same 6 elements)</span>
+a.T                     <span class="c"># shape becomes (3,2)</span></pre>
+      </div>
+
+      <div class="memory">💡 axis=0 moves DOWN the rows (gives one result per column). axis=1 moves ACROSS the columns (gives one result per row).</div>
+    </div>
+
+    <!-- ── SECTION 3 ── -->
+    <div class="section" id="trig">
+      <div class="section-header">
+        <span class="section-num">1.3</span>
+        <h2>Trigonometric Functions &amp; Arithmetic Operations</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Math on entire arrays at once — signals, angles, element-by-element math. NumPy does the loop for you.
+          <div class="when-summary">This is where NumPy really shines as a math engine. Whether you're computing sine waves for signal processing, squaring values for loss functions, or rounding predictions to two decimals — all of it happens across the entire array in one call. No for-loops, no manual indexing, just clean vectorized math.</div>
+        </div>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Trig</div>
+          <div class="card-fn">np.sin(a)<br>np.cos(a)<br>np.tan(a)<br>np.deg2rad(180)<br>np.rad2deg(np.pi)</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Exponents &amp; Logs</div>
+          <div class="card-fn">np.exp(a)<br>np.log(a)<br>np.log2(a)<br>np.log10(a)<br>np.sqrt(a)</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Rounding</div>
+          <div class="card-fn">np.round(a, 2)<br>np.floor(a)<br>np.ceil(a)<br>np.abs(a)</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>a = np.<span class="fn">array</span>([<span class="num">0</span>, <span class="num">30</span>, <span class="num">60</span>, <span class="num">90</span>])
+angles = np.<span class="fn">deg2rad</span>(a)       <span class="c"># convert degrees → radians first!</span>
+np.<span class="fn">sin</span>(angles)              <span class="c"># → [0, 0.5, 0.866, 1.0]</span>
+
+<span class="c"># Arithmetic works element-by-element</span>
+x = np.<span class="fn">array</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+y = np.<span class="fn">array</span>([<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>])
+x + y                       <span class="c"># → [5, 7, 9]</span>
+x * y                       <span class="c"># → [4, 10, 18]</span>
+x ** <span class="num">2</span>                      <span class="c"># → [1, 4, 9]</span></pre>
+      </div>
+
+      <div class="tip">
+        <div class="tip-row"><span class="tip-icon">⚡</span><div>NumPy trig functions expect <strong>radians</strong>, not degrees. Always convert with <strong>np.deg2rad()</strong> first — forgetting this is one of the most common NumPy mistakes.</div></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4 ── -->
+    <div class="section" id="matrices">
+      <div class="section-header">
+        <span class="section-num">1.4</span>
+        <h2>Operations on Matrices</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Linear algebra, machine learning math, solving systems of equations, transformations.
+          <div class="when-summary">Matrices are how data science thinks about data — rows are samples, columns are features. Once you get into ML, you'll see matrix operations everywhere: weights multiplied by inputs, covariance matrices, dimensionality reduction. Understanding <strong>A @ B</strong> vs <strong>A * B</strong> is one of the most important distinctions in all of NumPy.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>A = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])
+B = np.<span class="fn">array</span>([[<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>]])
+
+<span class="c"># Element-wise vs matrix multiplication</span>
+A * B                       <span class="c"># element-wise: [[5,12],[21,32]]</span>
+A @ B                       <span class="c"># matrix multiply: [[19,22],[43,50]]</span>
+np.<span class="fn">dot</span>(A, B)               <span class="c"># same as A @ B</span>
+
+<span class="c"># Linear algebra operations</span>
+np.linalg.<span class="fn">det</span>(A)           <span class="c"># determinant → -2.0</span>
+np.linalg.<span class="fn">inv</span>(A)           <span class="c"># inverse matrix</span>
+np.linalg.<span class="fn">eig</span>(A)           <span class="c"># eigenvalues and eigenvectors</span>
+A.T                         <span class="c"># transpose</span></pre>
+      </div>
+
+      <div class="memory">💡 Key distinction: A * B multiplies matching positions. A @ B does true matrix multiplication (rows × columns). In data science, you almost always want @.</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Operation</th><th>Code</th><th>Think of it as...</th></tr></thead>
+          <tbody>
+            <tr><td>Matrix multiply</td><td class="code-cell">A @ B</td><td>combining transformations</td></tr>
+            <tr><td>Determinant</td><td class="code-cell">np.linalg.det(A)</td><td>does a solution exist?</td></tr>
+            <tr><td>Inverse</td><td class="code-cell">np.linalg.inv(A)</td><td>undo the transformation</td></tr>
+            <tr><td>Eigenvalues</td><td class="code-cell">np.linalg.eig(A)</td><td>natural stretch directions</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5 ── -->
+    <div class="section" id="random">
+      <div class="section-header">
+        <span class="section-num">1.5</span>
+        <h2>Random Function in NumPy</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Simulations, generating test data, initializing weights in ML models, shuffling datasets, sampling.
+          <div class="when-summary">Randomness is everywhere in data science — from train/test splits to dropout in neural networks. NumPy's random module gives you controlled, reproducible randomness. The key word is <strong>controlled</strong>: by setting a seed you get the same "random" numbers every run, which means your experiments are repeatable and shareable.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>rng = np.random.<span class="fn">default_rng</span>(<span class="num">42</span>)   <span class="c"># seed=42 → reproducible results</span>
+
+<span class="c"># Generate random numbers</span>
+rng.<span class="fn">random</span>(<span class="num">5</span>)               <span class="c"># 5 floats between 0.0 and 1.0</span>
+rng.<span class="fn">integers</span>(<span class="num">1</span>, <span class="num">10</span>, <span class="num">5</span>)     <span class="c"># 5 random integers between 1–9</span>
+rng.<span class="fn">normal</span>(<span class="num">0</span>, <span class="num">1</span>, (<span class="num">3</span>,<span class="num">3</span>))    <span class="c"># 3×3 from normal dist (mean=0, std=1)</span>
+
+<span class="c"># Useful utilities</span>
+a = np.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>])
+rng.<span class="fn">shuffle</span>(a)              <span class="c"># shuffle in-place</span>
+rng.<span class="fn">choice</span>(a, <span class="num">3</span>)            <span class="c"># pick 3 random items</span></pre>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">Distributions</div>
+          <div class="card-fn">rng.random()<br>rng.normal(μ, σ)<br>rng.uniform(lo, hi)<br>rng.binomial(n, p)</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Sampling</div>
+          <div class="card-fn">rng.integers(lo,hi,n)<br>rng.choice(array, n)<br>rng.shuffle(array)<br>rng.permutation(n)</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <div class="tip-row"><span class="tip-icon">⚡</span><div>Always set a <strong>seed</strong> (e.g., default_rng(42)) when you want the same random numbers every run. Critical for reproducible experiments — without it, results change every time.</div></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 6 ── -->
+    <div class="section" id="access">
+      <div class="section-header">
+        <span class="section-num">1.6</span>
+        <h2>Accessing NumPy Arrays</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Extracting specific rows, columns, elements, or sub-sections of your data.
+          <div class="when-summary">Indexing and slicing is how you talk to your data. Want the first 100 rows? Grab every other column? Filter out all values below zero? This is the tool. Mastering slicing — especially boolean indexing — is what separates someone who can read NumPy code from someone who can actually write it confidently.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>a = np.<span class="fn">array</span>([[<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>],
+               [<span class="num">40</span>,<span class="num">50</span>,<span class="num">60</span>],
+               [<span class="num">70</span>,<span class="num">80</span>,<span class="num">90</span>]])
+
+<span class="c"># Single element: [row, col]</span>
+a[<span class="num">0</span>, <span class="num">2</span>]          <span class="c"># → 30  (row 0, col 2)</span>
+a[<span class="num">-1</span>, <span class="num">-1</span>]        <span class="c"># → 90  (last row, last col)</span>
+
+<span class="c"># Slicing: [start:stop:step]  (stop is NOT included)</span>
+a[<span class="num">0</span>, :]           <span class="c"># → [10, 20, 30]  entire row 0</span>
+a[:, <span class="num">1</span>]           <span class="c"># → [20, 50, 80]  entire column 1</span>
+a[<span class="num">0</span>:<span class="num">2</span>, <span class="num">1</span>:<span class="num">3</span>]       <span class="c"># → [[20,30],[50,60]]</span>
+
+<span class="c"># Boolean (conditional) indexing</span>
+a[a > <span class="num">50</span>]          <span class="c"># → [60, 70, 80, 90]</span>
+a[a % <span class="num">20</span> == <span class="num">0</span>]    <span class="c"># → all multiples of 20</span>
+
+<span class="c"># Fancy indexing</span>
+a[[<span class="num">0</span>, <span class="num">2</span>], :]       <span class="c"># → rows 0 and 2 only</span></pre>
+      </div>
+
+      <div class="memory">💡 Slicing rule: [row_slice, col_slice]. The colon : means "all". Think of it like reading a table: row first, then column.</div>
+
+      <div class="tip">
+        <div class="tip-row"><span class="tip-icon">⚡</span><div>Slices return a <strong>view</strong>, not a copy — changing it changes the original array too. Use <code>.copy()</code> if you need an independent version: <code>b = a[0:2].copy()</code></div></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 7 ── -->
+    <div class="section" id="modify">
+      <div class="section-header">
+        <span class="section-num">1.7</span>
+        <h2>Modifying the Entries of a Matrix</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Updating values in-place, replacing bad data, transforming specific cells, combining arrays.
+          <div class="when-summary">Real-world data is messy — negative values where there shouldn't be any, missing entries, data from two sources that needs merging. This section covers how to clean and reshape data directly in NumPy. <strong>np.where()</strong> in particular is a must-know: it's a one-liner that replaces entire loops of if-else logic.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>a = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>]])
+
+<span class="c"># Modify a single element</span>
+a[<span class="num">0</span>, <span class="num">1</span>] = <span class="num">99</span>          <span class="c"># → [[1,99,3],[4,5,6]]</span>
+
+<span class="c"># Modify an entire row or column</span>
+a[<span class="num">1</span>, :] = <span class="num">0</span>            <span class="c"># set all of row 1 to zero</span>
+a[:, <span class="num">0</span>] = [<span class="num">10</span>, <span class="num">20</span>]    <span class="c"># set column 0</span>
+
+<span class="c"># Conditional modification</span>
+a[a < <span class="num">0</span>] = <span class="num">0</span>           <span class="c"># clip negatives to zero</span>
+np.<span class="fn">where</span>(a > <span class="num">3</span>, a, <span class="num">0</span>) <span class="c"># keep values >3, else replace with 0</span>
+
+<span class="c"># Adding / removing rows & columns</span>
+np.<span class="fn">append</span>(a, [[<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>]], axis=<span class="num">0</span>)  <span class="c"># add a row</span>
+np.<span class="fn">delete</span>(a, <span class="num">1</span>, axis=<span class="num">0</span>)          <span class="c"># delete row 1</span>
+np.<span class="fn">concatenate</span>([a, b], axis=<span class="num">0</span>)   <span class="c"># stack vertically</span>
+np.<span class="fn">concatenate</span>([a, b], axis=<span class="num">1</span>)   <span class="c"># stack horizontally</span></pre>
+      </div>
+
+      <div class="memory">💡 np.where(condition, if_true, if_false) — a vectorized if-else that runs on the entire array at once.</div>
+    </div>
+
+    <!-- ── SECTION 8 ── -->
+    <div class="section" id="save">
+      <div class="section-header">
+        <span class="section-num">1.8</span>
+        <h2>Saving and Loading NumPy Arrays</h2>
+      </div>
+      <div class="section-divider"></div>
+
+      <div class="when-box">
+        🧠
+        <div><strong>When to use:</strong> Persisting processed data so you don't have to recompute it. Great for large datasets or trained model weights.
+          <div class="when-summary">Processing a large dataset can take minutes or hours. Saving the result means you only do it once — next time you just load the file and pick up where you left off. This is a habit every data scientist develops early. The <strong>.npy</strong> format is NumPy's native binary format — it's fast, lossless, and preserves your array's exact shape and data type.</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">python</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+        <pre>a = np.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])
+
+<span class="c"># .npy — single array, binary format (fast)</span>
+np.<span class="fn">save</span>(<span class="str">'my_array.npy'</span>, a)
+b = np.<span class="fn">load</span>(<span class="str">'my_array.npy'</span>)
+
+<span class="c"># .npz — MULTIPLE arrays, access by key</span>
+np.<span class="fn">savez</span>(<span class="str">'data.npz'</span>, x=a, y=b)
+loaded = np.<span class="fn">load</span>(<span class="str">'data.npz'</span>)
+loaded[<span class="str">'x'</span>]                       <span class="c"># access by key</span>
+
+<span class="c"># .csv — human-readable, shareable</span>
+np.<span class="fn">savetxt</span>(<span class="str">'data.csv'</span>, a, delimiter=<span class="str">','</span>)
+c = np.<span class="fn">loadtxt</span>(<span class="str">'data.csv'</span>, delimiter=<span class="str">','</span>)</pre>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">.npy</div>
+          <div class="card-fn">Binary, fast<br>Single array<br>Keeps dtype &amp; shape</div>
+        </div>
+        <div class="card">
+          <div class="card-title">.npz</div>
+          <div class="card-fn">Binary, fast<br>Multiple arrays<br>Access by name</div>
+        </div>
+        <div class="card">
+          <div class="card-title">.csv / .txt</div>
+          <div class="card-fn">Human-readable<br>Share with others<br>Slower to load</div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <div class="tip-row"><span class="tip-icon">⚡</span><div>Use <strong>.npy / .npz</strong> for data you'll only use in Python — they're faster and preserve dtype and shape exactly.</div></div>
+        <div class="tip-row"><span class="tip-icon">⚡</span><div>Use <strong>.csv</strong> when you need to open it in Excel, share it with others, or use it outside Python.</div></div>
+      </div>
+    </div>
+
+    <!-- ── CHEATSHEET ── -->
+    <div class="cheat-section" id="cheatsheet">
+      <div class="cheat-header">
+        <div class="star-badge">🤓</div>
+        <h2>Quick-Recall Cheatsheet</h2>
+      </div>
+      <div style="padding: 12px 20px 4px; font-size: 13px; color: var(--text2); line-height: 1.7; border-bottom: 1px solid var(--border);">
+        You've made it through all 8 sections — this is your finish line. Use this table as a daily reference while you're still building muscle memory. The best way to study it: <strong style="color: var(--text);">cover the right column</strong> and see if you can recall the function just from the description. Once you can do that without hesitating, you know NumPy.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>What you want to do</th><th>Use this</th></tr></thead>
+          <tbody>
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">🧱 Creating Arrays</td></tr>
+            <tr><td>📦 Create array from data</td><td class="code-cell">np.array([...])</td></tr>
+            <tr><td>0️⃣ Array of zeros / ones</td><td class="code-cell">np.zeros(n) / np.ones(n)</td></tr>
+            <tr><td>📏 Evenly spaced numbers</td><td class="code-cell">np.linspace(a, b, n)</td></tr>
+            <tr><td>🪜 Range with step size</td><td class="code-cell">np.arange(start, stop, step)</td></tr>
+
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">🔍 Inspecting & Reshaping</td></tr>
+            <tr><td>📐 Shape / dimensions</td><td class="code-cell">a.shape / a.ndim</td></tr>
+            <tr><td>🔄 Reshape array</td><td class="code-cell">a.reshape(rows, cols)</td></tr>
+            <tr><td>📋 Flatten to 1D</td><td class="code-cell">a.flatten()</td></tr>
+            <tr><td>🔃 Transpose rows ↔ cols</td><td class="code-cell">a.T</td></tr>
+
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">➕ Math & Statistics</td></tr>
+            <tr><td>🧮 Sum / mean / std</td><td class="code-cell">np.sum(a) / np.mean(a) / np.std(a)</td></tr>
+            <tr><td>✖️ Matrix multiply</td><td class="code-cell">A @ B</td></tr>
+            <tr><td>📐 Trig on array</td><td class="code-cell">np.sin(a) / np.cos(a) / np.tan(a)</td></tr>
+
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">🎯 Accessing Data</td></tr>
+            <tr><td>📍 Get element at row r, col c</td><td class="code-cell">a[r, c]</td></tr>
+            <tr><td>⬇️ Get entire column c</td><td class="code-cell">a[:, c]</td></tr>
+            <tr><td>➡️ Get entire row r</td><td class="code-cell">a[r, :]</td></tr>
+            <tr><td>🔎 Filter by condition</td><td class="code-cell">a[a > 5]</td></tr>
+            <tr><td>🔀 Replace based on condition</td><td class="code-cell">np.where(cond, if_true, if_false)</td></tr>
+
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">🎲 Random</td></tr>
+            <tr><td>🎰 Random floats 0–1</td><td class="code-cell">rng.random(n)</td></tr>
+            <tr><td>🎲 Random integers</td><td class="code-cell">rng.integers(lo, hi, n)</td></tr>
+
+            <tr><td colspan="2" style="background:var(--bg3);font-size:11px;font-weight:500;letter-spacing:0.07em;color:var(--text3);text-transform:uppercase;padding:7px 14px;">💾 Save & Load</td></tr>
+            <tr><td>💾 Save single array</td><td class="code-cell">np.save('file.npy', a)</td></tr>
+            <tr><td>📂 Load array</td><td class="code-cell">np.load('file.npy')</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── OUTRO ── -->
+    <div class="section" style="margin-top: 2.5rem;">
+      <div style="border-top: 1px solid var(--border); padding-top: 2rem;">
+
+        <p style="font-family: var(--font-serif); font-size: 22px; font-weight: 300; color: var(--text); line-height: 1.4; margin-bottom: 1rem;">
+          You now know the 8 concepts that do the <em style="color: var(--accent);">actual work</em> in NumPy.
+        </p>
+
+        <p style="font-size: 14px; color: var(--text2); line-height: 1.8; margin-bottom: 1rem;">
+          Most people learn NumPy by memorizing syntax. What makes the difference is understanding <em>when</em> and <em>why</em> to reach for each tool — and that's exactly what this guide was built for. If you worked through every section, you didn't just study a library. You built a mental model that will carry you through pandas, scikit-learn, and beyond.
+        </p>
+
+        <p style="font-size: 14px; color: var(--text2); line-height: 1.8; margin-bottom: 1.5rem;">
+          The honest next step? <strong style="color: var(--text);">Open a notebook and use it.</strong> Pick any dataset, load it into a NumPy array, and try to answer a question about it using only what's in this guide. That first real use is worth ten re-reads.
+        </p>
+
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--border-radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+          <div style="font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 12px;">🚀 What to learn next</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.6;"><span style="color: var(--accent); font-weight: 500;">Broadcasting</span><br>The one NumPy concept this guide didn't cover — and the one you'll hit next. It's how NumPy handles math between arrays of different shapes.</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.6;"><span style="color: var(--accent); font-weight: 500;">Pandas</span><br>Built on top of NumPy. Once arrays feel natural, pandas DataFrames will click immediately — it's the same ideas with labels and names attached.</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.6;"><span style="color: var(--accent); font-weight: 500;">Matplotlib</span><br>Turn your arrays into charts. Pair it with what you learned here and you can go from raw numbers to a visual insight in minutes.</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.6;"><span style="color: var(--accent); font-weight: 500;">Scikit-learn</span><br>The ML library that sits on top of NumPy. Everything you pass in and get out is an ndarray — so you're already speaking its language.</div>
+          </div>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text3); line-height: 1.7; font-style: italic;">
+          Written as a study companion for the NumPy module (lessons 1.1–1.8). Updated as the course progresses. 🤓
+        </p>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Copy button
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 1800);
+    });
+  }
+
+  // Active sidebar on scroll
+  const sections = document.querySelectorAll('.section[id], .cheat-section[id]');
+  const sideLinks = document.querySelectorAll('#sidebar-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        sideLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`#sidebar-nav a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
