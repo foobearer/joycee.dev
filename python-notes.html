@@ -64,14 +64,16 @@
   }
 
   .nav-brand {
-    font-family: var(--font-serif);
-    font-size: 17px;
-    font-weight: 400;
-    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: #00ff9d;
     text-decoration: none;
     margin-right: 2.5rem;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s;
   }
+  .nav-brand:hover { opacity: 0.75; }
 
   .nav-tabs {
     display: flex;
@@ -610,14 +612,7 @@
 
 <!-- NAV -->
 <nav>
-  <a href="#" class="nav-brand">Portfolio</a>
-  <ul class="nav-tabs">
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Projects</a></li>
-    <li><a href="#">About</a></li>
-    <li><a href="#" class="active">Python Notes</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
+  <a href="./index.html" class="nav-brand"><span style="opacity:0.5">~/</span>joycee.dev</a>
 </nav>
 
 <!-- PAGE -->
